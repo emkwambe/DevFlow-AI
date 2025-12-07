@@ -704,6 +704,9 @@ body {
 .chat-message { margin-bottom: 1rem; padding: 1rem; border-radius: 12px; }
 .chat-message.user { background: var(--accent-primary); margin-left: 2rem; }
 .chat-message.assistant { background: var(--bg-secondary); border: 1px solid var(--border-color); margin-right: 2rem; }
+.chat-message.system { background: var(--bg-tertiary); border: 1px solid var(--border-color); margin: 0 1rem; }
+.chat-message.execution-result { border-left: 3px solid var(--success-text); }
+.chat-message.execution-result .message-role { color: var(--success-text); }
 
 .message-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.8rem; }
 .message-role { font-weight: 600; }

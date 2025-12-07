@@ -52,16 +52,24 @@ export function ChatPanel() {
 
   // Handle script execution from message
   const handleRunScript = async (scriptContent: string) => {
-    const { addTerminalOutput } = useAppStore.getState();
+    const { addTerminalOutput, sendExecutionResult } = useAppStore.getState();
 
     addTerminalOutput('='.repeat(50));
     addTerminalOutput('Running PowerShell script from AI...');
     addTerminalOutput('='.repeat(50));
 
+    let outputText = '';
+    let success = false;
+    let executionTime = 0;
+
     try {
       const result = await window.electronAPI.ps.execute(scriptContent);
+      executionTime = result.executionTime || 0;
 
       if (result.success) {
+        success = true;
+        outputText = result.output || '';
+
         addTerminalOutput(result.output);
         addTerminalOutput('');
         addTerminalOutput(`[OK] Completed in ${result.executionTime}ms`);
@@ -69,16 +77,26 @@ export function ChatPanel() {
         if (result.filesCreated && result.filesCreated.length > 0) {
           addTerminalOutput('');
           addTerminalOutput('Files created:');
-          result.filesCreated.forEach(f => addTerminalOutput(`   ${f}`));
+          result.filesCreated.forEach(f => {
+            addTerminalOutput(`   ${f}`);
+            outputText += `\nCreated: ${f}`;
+          });
         }
       } else {
+        success = false;
+        outputText = result.error || 'Unknown error';
         addTerminalOutput(`ERROR: ${result.error}`);
       }
     } catch (err) {
+      success = false;
+      outputText = (err as Error).message;
       addTerminalOutput(`ERROR: ${(err as Error).message}`);
     }
 
     addTerminalOutput('');
+
+    // Send execution result back to AI for evaluation
+    await sendExecutionResult(scriptContent, outputText, success, executionTime);
   };
 
   // Show welcome screen if no project selected
@@ -141,10 +159,10 @@ export function ChatPanel() {
           </div>
         ) : (
           messages.map((message) => (
-            <div key={message.id} className={`chat-message ${message.role}`}>
+            <div key={message.id} className={`chat-message ${message.role} ${message.isExecutionResult ? 'execution-result' : ''}`}>
               <div className="message-header">
                 <span className="message-role">
-                  {message.role === 'user' ? '[You]' : '[Claude]'}
+                  {message.role === 'user' ? '[You]' : message.role === 'system' ? '[Execution]' : '[Claude]'}
                 </span>
                 <span className="message-time">
                   {new Date(message.timestamp).toLocaleTimeString()}
