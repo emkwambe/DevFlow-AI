@@ -36,11 +36,12 @@ export interface Decision {
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
   hasScript?: boolean;
   scriptContent?: string;
+  isExecutionResult?: boolean;
 }
 
 export interface TerminalOutput {
@@ -70,6 +71,7 @@ interface AppState {
   messages: ChatMessage[];
   isAiLoading: boolean;
   sendMessage: (content: string) => Promise<void>;
+  sendExecutionResult: (script: string, output: string, success: boolean, executionTime: number) => Promise<void>;
   clearMessages: () => void;
   
   // Terminal
@@ -286,7 +288,82 @@ export const useAppStore = create<AppState>()(
       },
       
       clearMessages: () => set({ messages: [] }),
-      
+
+      // Send execution result back to AI for evaluation
+      sendExecutionResult: async (script, output, success, executionTime) => {
+        const { currentProject, messages } = get();
+
+        if (!currentProject) return;
+
+        // Create execution result message (shown to user)
+        const resultMessage: ChatMessage = {
+          id: generateId(),
+          role: 'system',
+          content: `**Script Execution ${success ? 'Completed' : 'Failed'}** (${executionTime}ms)\n\n\`\`\`\n${output.slice(0, 2000)}${output.length > 2000 ? '\n... (truncated)' : ''}\n\`\`\``,
+          timestamp: new Date().toISOString(),
+          isExecutionResult: true
+        };
+
+        set({
+          messages: [...messages, resultMessage],
+          isAiLoading: true
+        });
+
+        try {
+          const context = buildContext(currentProject);
+
+          // Format the execution feedback for AI
+          const feedbackPrompt = `I just ran the PowerShell script you provided. Here's the result:
+
+**Status:** ${success ? 'SUCCESS' : 'FAILED'}
+**Execution Time:** ${executionTime}ms
+
+**Output:**
+\`\`\`
+${output.slice(0, 3000)}${output.length > 3000 ? '\n... (truncated)' : ''}
+\`\`\`
+
+Please:
+1. Evaluate if the script executed successfully
+2. Note any errors or warnings
+3. Suggest the next step or fix any issues`;
+
+          const currentMessages = get().messages;
+          const historyForApi = formatChatHistory(currentMessages.slice(0, -1));
+
+          const result = await window.electronAPI.ai.chat(feedbackPrompt, context, historyForApi);
+
+          if (result.success && result.response) {
+            const hasScript = result.response.includes('```powershell');
+            let scriptContent: string | undefined;
+
+            if (hasScript) {
+              const match = result.response.match(/```powershell\n([\s\S]*?)```/);
+              scriptContent = match?.[1];
+            }
+
+            const assistantMessage: ChatMessage = {
+              id: generateId(),
+              role: 'assistant',
+              content: result.response,
+              timestamp: new Date().toISOString(),
+              hasScript,
+              scriptContent
+            };
+
+            set({
+              messages: [...get().messages, assistantMessage],
+              isAiLoading: false
+            });
+          } else {
+            set({ isAiLoading: false });
+          }
+        } catch (err) {
+          console.error('Failed to send execution result to AI:', err);
+          set({ isAiLoading: false });
+        }
+      },
+
       // Terminal
       terminalOutput: [],
       

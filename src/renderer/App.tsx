@@ -9,6 +9,7 @@ import { ProjectContext } from './components/ProjectContext';
 import { Terminal } from './components/Terminal';
 import { Settings } from './components/Settings';
 import { ProjectSelector } from './components/ProjectSelector';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export function App() {
   const { 
@@ -43,58 +44,62 @@ export function App() {
   };
 
   return (
-    <div className="app-container">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        {/* Project Selector */}
-        <ProjectSelector />
+    <ErrorBoundary>
+      <div className="app-container">
+        {/* Sidebar */}
+        <aside className="sidebar">
+          {/* Project Selector */}
+          <ProjectSelector />
 
-        {/* Navigation */}
-        <nav className="sidebar-nav">
-          <button
-            className={`nav-item ${currentView === 'chat' ? 'active' : ''}`}
-            onClick={() => setView('chat')}
-          >
-            <span className="nav-icon">💬</span>
-            <span className="nav-label">AI Chat</span>
-          </button>
+          {/* Navigation */}
+          <nav className="sidebar-nav">
+            <button
+              className={`nav-item ${currentView === 'chat' ? 'active' : ''}`}
+              onClick={() => setView('chat')}
+            >
+              <span className="nav-icon">[Chat]</span>
+              <span className="nav-label">AI Chat</span>
+            </button>
 
-          <button
-            className={`nav-item ${currentView === 'context' ? 'active' : ''}`}
-            onClick={() => setView('context')}
-          >
-            <span className="nav-icon">🎯</span>
-            <span className="nav-label">Project Context</span>
-          </button>
+            <button
+              className={`nav-item ${currentView === 'context' ? 'active' : ''}`}
+              onClick={() => setView('context')}
+            >
+              <span className="nav-icon">[Ctx]</span>
+              <span className="nav-label">Project Context</span>
+            </button>
 
-          <button
-            className={`nav-item ${currentView === 'terminal' ? 'active' : ''}`}
-            onClick={() => setView('terminal')}
-          >
-            <span className="nav-icon">⚡</span>
-            <span className="nav-label">Terminal</span>
-          </button>
+            <button
+              className={`nav-item ${currentView === 'terminal' ? 'active' : ''}`}
+              onClick={() => setView('terminal')}
+            >
+              <span className="nav-icon">[Term]</span>
+              <span className="nav-label">Terminal</span>
+            </button>
 
-          <button
-            className={`nav-item ${currentView === 'settings' ? 'active' : ''}`}
-            onClick={() => setView('settings')}
-          >
-            <span className="nav-icon">⚙️</span>
-            <span className="nav-label">Settings</span>
-          </button>
-        </nav>
+            <button
+              className={`nav-item ${currentView === 'settings' ? 'active' : ''}`}
+              onClick={() => setView('settings')}
+            >
+              <span className="nav-icon">[Set]</span>
+              <span className="nav-label">Settings</span>
+            </button>
+          </nav>
 
-        {/* Footer */}
-        <div className="sidebar-footer">
-          <span className="version">DevFlow AI v2.0</span>
-        </div>
-      </aside>
+          {/* Footer */}
+          <div className="sidebar-footer">
+            <span className="version">DevFlow AI v2.0</span>
+          </div>
+        </aside>
 
-      {/* Main Content */}
-      <main className="main-content">
-        {renderView()}
-      </main>
-    </div>
+        {/* Main Content */}
+        <main className="main-content">
+          <ErrorBoundary>
+            {renderView()}
+          </ErrorBoundary>
+        </main>
+      </div>
+    </ErrorBoundary>
   );
 }
 

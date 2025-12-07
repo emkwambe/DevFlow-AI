@@ -6,15 +6,15 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../stores/appStore';
 
 export function Settings() {
-  const { 
-    hasApiKey, 
-    setApiKey, 
+  const {
+    hasApiKey,
+    setApiKey,
     checkApiKey,
     projects,
     deleteProject,
     currentProject
   } = useAppStore();
-  
+
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -32,13 +32,13 @@ export function Settings() {
   // Handle API key save
   const handleSaveApiKey = async () => {
     if (!apiKeyInput.trim()) return;
-    
+
     setIsSaving(true);
     setSaveMessage(null);
-    
+
     try {
       const success = await setApiKey(apiKeyInput.trim());
-      
+
       if (success) {
         setSaveMessage({ type: 'success', text: 'API key saved successfully!' });
         setApiKeyInput('');
@@ -49,7 +49,7 @@ export function Settings() {
     } catch (err) {
       setSaveMessage({ type: 'error', text: 'Error saving API key.' });
     }
-    
+
     setIsSaving(false);
   };
 
@@ -74,12 +74,12 @@ export function Settings() {
             <span className="status-badge success">Configured</span>
           )}
         </div>
-        
+
         <p className="section-description">
           Your API key is stored securely and encrypted on your device.
           Get your key from{' '}
-          <a 
-            href="#" 
+          <a
+            href="#"
             onClick={(e) => {
               e.preventDefault();
               window.electronAPI.dialog.openExternal('https://console.anthropic.com/');
@@ -95,18 +95,18 @@ export function Settings() {
               type={showApiKey ? 'text' : 'password'}
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder={hasApiKey ? 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢' : 'sk-ant-api...'}
+              placeholder={hasApiKey ? '****************' : 'sk-ant-api...'}
               className="settings-input"
             />
-            <button 
+            <button
               className="toggle-visibility"
               onClick={() => setShowApiKey(!showApiKey)}
               type="button"
             >
-              {showApiKey ? 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ãƒâ€¹Ã¢â‚¬Â ' : 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â'}
+              {showApiKey ? 'Hide' : 'Show'}
             </button>
           </div>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={handleSaveApiKey}
             disabled={!apiKeyInput.trim() || isSaving}
@@ -136,8 +136,8 @@ export function Settings() {
             </div>
           ) : (
             projects.map((project) => (
-              <div 
-                key={project.id} 
+              <div
+                key={project.id}
                 className={`project-item ${currentProject?.id === project.id ? 'current' : ''}`}
               >
                 <div className="project-item-info">
@@ -154,18 +154,18 @@ export function Settings() {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="project-item-actions">
                   {confirmDelete === project.id ? (
                     <>
                       <span className="confirm-text">Delete?</span>
-                      <button 
+                      <button
                         className="btn btn-danger btn-small"
                         onClick={() => handleDeleteProject(project.id)}
                       >
                         Yes
                       </button>
-                      <button 
+                      <button
                         className="btn btn-secondary btn-small"
                         onClick={() => setConfirmDelete(null)}
                       >
@@ -173,7 +173,7 @@ export function Settings() {
                       </button>
                     </>
                   ) : (
-                    <button 
+                    <button
                       className="btn btn-danger btn-small"
                       onClick={() => setConfirmDelete(project.id)}
                     >
@@ -192,7 +192,7 @@ export function Settings() {
         <div className="section-header">
           <h3>About DevFlow AI</h3>
         </div>
-        
+
         <div className="about-info">
           <p><strong>Version:</strong> 2.0.0</p>
           <p><strong>Purpose:</strong> AI-powered development assistant with PowerShell integration</p>

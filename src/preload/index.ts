@@ -44,6 +44,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   fs: {
     readDir: (dirPath: string) => ipcRenderer.invoke('fs:readDir', dirPath),
     exists: (filePath: string) => ipcRenderer.invoke('fs:exists', filePath),
+    selectFolder: () => ipcRenderer.invoke('fs:selectFolder'),
+    createFile: (path: string, content: string) => ipcRenderer.invoke('fs:createFile', path, content),
+    createFolder: (path: string) => ipcRenderer.invoke('fs:createFolder', path),
+    readFile: (path: string) => ipcRenderer.invoke('fs:readFile', path),
   }
 });
 
@@ -89,6 +93,10 @@ declare global {
       fs: {
         readDir: (dirPath: string) => Promise<string[]>;
         exists: (filePath: string) => Promise<boolean>;
+        selectFolder: () => Promise<string | null>;
+        createFile: (path: string, content: string) => Promise<{ success: boolean; error?: string }>;
+        createFolder: (path: string) => Promise<{ success: boolean; error?: string }>;
+        readFile: (path: string) => Promise<{ success: boolean; content?: string; error?: string }>;
       };
     };
   }
