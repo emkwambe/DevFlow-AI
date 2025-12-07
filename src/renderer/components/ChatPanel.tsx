@@ -112,9 +112,7 @@ export function ChatPanel() {
         <div className="chat-header-info">
           <h2>AI Assistant</h2>
           <span className="chat-context-info">
-            Context: {currentProject.name} |
-            {currentProject?.keyFacts?.length || 0} facts |
-            {currentProject?.decisions?.length || 0} decisions
+            Context: {currentProject.name} | {currentProject?.keyFacts?.length || 0} facts | {currentProject?.decisions?.length || 0} decisions
           </span>
         </div>
         <button
