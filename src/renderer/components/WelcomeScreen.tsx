@@ -55,15 +55,15 @@ export function WelcomeScreen() {
       <div className="welcome-screen">
         <div className="welcome-content">
           <div className="welcome-header">
-            <h1>⚡ DevFlow AI</h1>
+            <h1>DevFlow AI</h1>
             <p className="tagline">Build software that matters.</p>
           </div>
-          
+
           <div className="philosophy-section">
             <h2>How This Works</h2>
             <div className="philosophy-cards">
               <div className="philosophy-card user-card">
-                <div className="card-icon">👤</div>
+                <div className="card-icon">[You]</div>
                 <h3>You Bring</h3>
                 <ul>
                   <li>Who has the problem</li>
@@ -71,11 +71,11 @@ export function WelcomeScreen() {
                   <li>What you wish existed</li>
                 </ul>
               </div>
-              
+
               <div className="philosophy-plus">+</div>
-              
+
               <div className="philosophy-card claude-card">
-                <div className="card-icon">🤖</div>
+                <div className="card-icon">[AI]</div>
                 <h3>Claude Brings</h3>
                 <ul>
                   <li>Best architecture</li>
@@ -83,11 +83,11 @@ export function WelcomeScreen() {
                   <li>Production-ready code</li>
                 </ul>
               </div>
-              
+
               <div className="philosophy-equals">=</div>
-              
+
               <div className="philosophy-card result-card">
-                <div className="card-icon">🚀</div>
+                <div className="card-icon">[Ship]</div>
                 <h3>Together</h3>
                 <ul>
                   <li>Real value for users</li>
@@ -97,12 +97,12 @@ export function WelcomeScreen() {
               </div>
             </div>
           </div>
-          
-          <button 
+
+          <button
             className="btn btn-primary btn-large"
             onClick={() => setStep('vision')}
           >
-            Start New Project →
+            Start New Project
           </button>
         </div>
       </div>
@@ -115,81 +115,85 @@ export function WelcomeScreen() {
   if (step === 'vision') {
     return (
       <div className="welcome-screen">
-        <div className="welcome-content">
+        <div className="welcome-content welcome-content-wide">
           <div className="step-header">
             <span className="step-badge">Step 1 of 3</span>
             <h1>Tell Me Your Vision</h1>
             <p>Don't worry about technical details - Claude handles that.</p>
           </div>
-          
+
           <div className="vision-form">
             <div className="form-group">
-              <label>Project Name</label>
+              <label className="form-label">Project Name</label>
               <input
                 type="text"
+                className="form-input"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder="e.g., NumeralHealth, ParentBridge, TaskFlow"
               />
             </div>
-            
-            <div className="form-group vision-question">
-              <label>
-                <span className="question-icon">👥</span>
+
+            <div className="form-group">
+              <label className="form-label">
+                <span className="question-number">1.</span>
                 WHO has this problem?
               </label>
               <textarea
+                className="form-textarea"
                 value={targetUsers}
                 onChange={(e) => setTargetUsers(e.target.value)}
                 placeholder="e.g., Divorced parents with shared custody who struggle to coordinate schedules..."
-                rows={2}
+                rows={3}
               />
             </div>
-            
-            <div className="form-group vision-question">
-              <label>
-                <span className="question-icon">😤</span>
+
+            <div className="form-group">
+              <label className="form-label">
+                <span className="question-number">2.</span>
                 WHAT problem do they face?
               </label>
               <textarea
+                className="form-textarea"
                 value={problemSolved}
                 onChange={(e) => setProblemSolved(e.target.value)}
                 placeholder="e.g., They can't easily see shared calendars, split expenses fairly, or track who paid what..."
-                rows={2}
+                rows={3}
               />
             </div>
-            
-            <div className="form-group vision-question">
-              <label>
-                <span className="question-icon">✨</span>
+
+            <div className="form-group">
+              <label className="form-label">
+                <span className="question-number">3.</span>
                 WHAT do you wish existed?
               </label>
               <textarea
+                className="form-textarea"
                 value={wishedFeatures}
                 onChange={(e) => setWishedFeatures(e.target.value)}
                 placeholder="e.g., One app where both parents see the calendar, can request swaps, and automatically split costs..."
-                rows={2}
+                rows={3}
               />
             </div>
-            
+
             <p className="vision-note">
-              💡 The more detail you provide, the more tailored Claude's suggestions will be.
+              The more detail you provide, the more tailored Claude's suggestions will be.
             </p>
           </div>
-          
+
           <div className="step-actions">
-            <button 
+            <button
               className="btn btn-secondary"
               onClick={() => setStep('welcome')}
             >
-              ← Back
+              Back
             </button>
-            <button 
+            <button
               className="btn btn-primary"
               onClick={() => setStep('path')}
               disabled={!projectName.trim()}
             >
-              Next: Choose Location →
+              Next: Choose Location
             </button>
           </div>
         </div>
@@ -209,15 +213,14 @@ export function WelcomeScreen() {
             <h1>Where Should I Build?</h1>
             <p>Choose where your project files will be created.</p>
           </div>
-          
+
           <div className="path-selection">
             {selectedPath ? (
               <div className="path-selected">
                 <div className="path-display">
-                  <span className="folder-icon">📂</span>
                   <code>{selectedPath}</code>
                 </div>
-                <button 
+                <button
                   className="btn btn-secondary"
                   onClick={handleSelectFolder}
                 >
@@ -227,34 +230,34 @@ export function WelcomeScreen() {
             ) : (
               <div className="path-empty">
                 <p>No folder selected yet</p>
-                <button 
+                <button
                   className="btn btn-primary"
                   onClick={handleSelectFolder}
                 >
-                  📁 Select Project Folder
+                  Select Project Folder
                 </button>
               </div>
             )}
-            
+
             <div className="path-tip">
-              <strong>💡 Tip:</strong> Create a new empty folder for your project, like:
+              <strong>Tip:</strong> Create a new empty folder for your project, like:
               <code>C:\Users\YourName\Documents\{projectName || 'my-project'}</code>
             </div>
           </div>
-          
+
           <div className="step-actions">
-            <button 
+            <button
               className="btn btn-secondary"
               onClick={() => setStep('vision')}
             >
-              ← Back
+              Back
             </button>
-            <button 
+            <button
               className="btn btn-primary"
               onClick={handleCreateProject}
               disabled={!selectedPath}
             >
-              Create Project →
+              Create Project
             </button>
           </div>
         </div>
@@ -270,40 +273,40 @@ export function WelcomeScreen() {
       <div className="welcome-screen">
         <div className="welcome-content">
           <div className="step-header">
-            <span className="step-badge success">✓ Complete</span>
-            <h1>🎉 {projectName} Created!</h1>
+            <span className="step-badge success">Complete</span>
+            <h1>{projectName} Created!</h1>
             <p>Your project is ready. Here's what to do next:</p>
           </div>
-          
+
           <div className="next-steps">
             <div className="next-step">
               <div className="step-number">1</div>
               <div className="step-content">
                 <h3>Create Folder Structure</h3>
                 <p>Set up the project folders (no files yet, just organization)</p>
-                <code>Click "Step 1: Create Folder Structure" below</code>
+                <code>Click "Step 1: Folders" in chat</code>
               </div>
             </div>
-            
+
             <div className="next-step">
               <div className="step-number">2</div>
               <div className="step-content">
                 <h3>Scaffold the Project</h3>
                 <p>Generate config files, dependencies, and starter code</p>
-                <code>Click "Step 2: Scaffold My Project"</code>
+                <code>Click "Step 2: Scaffold" in chat</code>
               </div>
             </div>
-            
+
             <div className="next-step">
               <div className="step-number">3</div>
               <div className="step-content">
                 <h3>Build Your First Feature</h3>
                 <p>Start building real functionality with Claude's help</p>
-                <code>Click "Step 3: Build First Feature"</code>
+                <code>Click "Step 3: Feature" in chat</code>
               </div>
             </div>
           </div>
-          
+
           <p className="done-note">
             These steps will appear as buttons in the chat. You can also just type what you need!
           </p>
@@ -328,9 +331,9 @@ export function GuidedActions({ onAction }: { onAction: (prompt: string) => void
     {
       id: 'step1',
       label: 'Step 1: Folders',
-      icon: '📁',
+      icon: '[Dir]',
       description: 'Create folder structure',
-      prompt: `Create the folder structure for ${currentProject.name}. 
+      prompt: `Create the folder structure for ${currentProject.name}.
 
 IMPORTANT: Create FOLDERS ONLY, no files. Use New-Item -ItemType Directory.
 
@@ -342,7 +345,7 @@ Generate a PowerShell script that creates an organized folder structure appropri
     {
       id: 'step2',
       label: 'Step 2: Scaffold',
-      icon: '⚙️',
+      icon: '[Cfg]',
       description: 'Config files & starter code',
       prompt: `Scaffold ${currentProject.name} with all starter files.
 
@@ -351,7 +354,7 @@ The project is at: ${currentProject.rootPath}
 Create a PowerShell script that generates:
 - package.json with appropriate dependencies
 - tsconfig.json
-- tailwind.config.js  
+- tailwind.config.js
 - next.config.js
 - .env.example
 - app/layout.tsx
@@ -366,7 +369,7 @@ ${currentProject.description}`
     {
       id: 'step3',
       label: 'Step 3: Feature',
-      icon: '🚀',
+      icon: '[Go]',
       description: 'Build first feature',
       prompt: `Let's build the first feature for ${currentProject.name}.
 
@@ -378,7 +381,7 @@ What would be the most valuable first feature to implement? Suggest 2-3 options 
     {
       id: 'auth',
       label: 'Add Auth',
-      icon: '🔐',
+      icon: '[Key]',
       description: 'Supabase authentication',
       prompt: `Add Supabase authentication to ${currentProject.name}.
 
@@ -396,7 +399,7 @@ Use the Write-FileNoBom helper for all file creation.`
     {
       id: 'database',
       label: 'Add Database',
-      icon: '🗄️',
+      icon: '[DB]',
       description: 'Supabase schema',
       prompt: `Design and create the database schema for ${currentProject.name}.
 
