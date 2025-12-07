@@ -7,15 +7,15 @@ import { useAppStore } from '../stores/appStore';
 import { WelcomeScreen, GuidedActions } from './WelcomeScreen';
 
 export function ChatPanel() {
-  const { 
-    currentProject, 
-    messages, 
-    sendMessage, 
+  const {
+    currentProject,
+    messages,
+    sendMessage,
     clearMessages,
     isAiLoading,
-    hasApiKey 
+    hasApiKey
   } = useAppStore();
-  
+
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -32,7 +32,7 @@ export function ChatPanel() {
 
   const handleSend = async () => {
     if (!input.trim() || isAiLoading) return;
-    
+
     const message = input.trim();
     setInput('');
     await sendMessage(message);
@@ -48,26 +48,24 @@ export function ChatPanel() {
   // Handle guided action click
   const handleGuidedAction = (prompt: string) => {
     setInput(prompt);
-    // Optionally auto-send
-    // sendMessage(prompt);
   };
 
   // Handle script execution from message
   const handleRunScript = async (scriptContent: string) => {
     const { addTerminalOutput } = useAppStore.getState();
-    
-    addTerminalOutput(''.repeat(50));
+
+    addTerminalOutput('='.repeat(50));
     addTerminalOutput('Running PowerShell script from AI...');
-    addTerminalOutput(''.repeat(50));
-    
+    addTerminalOutput('='.repeat(50));
+
     try {
       const result = await window.electronAPI.ps.execute(scriptContent);
-      
+
       if (result.success) {
         addTerminalOutput(result.output);
         addTerminalOutput('');
-        addTerminalOutput(` Completed in ${result.executionTime}ms`);
-        
+        addTerminalOutput(`[OK] Completed in ${result.executionTime}ms`);
+
         if (result.filesCreated && result.filesCreated.length > 0) {
           addTerminalOutput('');
           addTerminalOutput('Files created:');
@@ -79,7 +77,7 @@ export function ChatPanel() {
     } catch (err) {
       addTerminalOutput(`ERROR: ${(err as Error).message}`);
     }
-    
+
     addTerminalOutput('');
   };
 
@@ -93,10 +91,10 @@ export function ChatPanel() {
     return (
       <div className="chat-panel">
         <div className="api-key-warning">
-          <div className="warning-icon"></div>
+          <div className="warning-icon">[!]</div>
           <h2>API Key Required</h2>
           <p>Please configure your Anthropic API key in Settings to start chatting with Claude.</p>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => useAppStore.getState().setView('settings')}
           >
@@ -112,14 +110,14 @@ export function ChatPanel() {
       {/* Header */}
       <div className="chat-header">
         <div className="chat-header-info">
-          <h2> AI Assistant</h2>
+          <h2>AI Assistant</h2>
           <span className="chat-context-info">
-            Context: {currentProject.name} 
-            {currentProject?.keyFacts?.length || 0} facts 
+            Context: {currentProject.name} |
+            {currentProject?.keyFacts?.length || 0} facts |
             {currentProject?.decisions?.length || 0} decisions
           </span>
         </div>
-        <button 
+        <button
           className="btn btn-secondary btn-small"
           onClick={clearMessages}
         >
@@ -131,7 +129,7 @@ export function ChatPanel() {
       <div className="chat-messages">
         {messages.length === 0 ? (
           <div className="chat-empty">
-            <div className="empty-icon"></div>
+            <div className="empty-icon">[&gt;]</div>
             <h3>Ready to Build!</h3>
             <p>Use the quick actions below or type your request.</p>
             <div className="empty-suggestions">
@@ -148,15 +146,15 @@ export function ChatPanel() {
             <div key={message.id} className={`chat-message ${message.role}`}>
               <div className="message-header">
                 <span className="message-role">
-                  {message.role === 'user' ? ' You' : ' Claude'}
+                  {message.role === 'user' ? '[You]' : '[Claude]'}
                 </span>
                 <span className="message-time">
                   {new Date(message.timestamp).toLocaleTimeString()}
                 </span>
               </div>
               <div className="message-content">
-                <MessageContent 
-                  content={message.content} 
+                <MessageContent
+                  content={message.content}
                   hasScript={message.hasScript}
                   scriptContent={message.scriptContent}
                   onRunScript={handleRunScript}
@@ -165,11 +163,11 @@ export function ChatPanel() {
             </div>
           ))
         )}
-        
+
         {isAiLoading && (
           <div className="chat-message assistant loading">
             <div className="message-header">
-              <span className="message-role"> Claude</span>
+              <span className="message-role">[Claude]</span>
             </div>
             <div className="message-content">
               <div className="typing-indicator">
@@ -180,7 +178,7 @@ export function ChatPanel() {
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -199,7 +197,7 @@ export function ChatPanel() {
           rows={3}
           disabled={isAiLoading}
         />
-        <button 
+        <button
           className="btn btn-primary chat-send-btn"
           onClick={handleSend}
           disabled={!input.trim() || isAiLoading}
@@ -225,7 +223,7 @@ interface MessageContentProps {
 function MessageContent({ content, hasScript, scriptContent, onRunScript }: MessageContentProps) {
   // Parse content for code blocks
   const parts = parseMessageContent(content);
-  
+
   return (
     <div className="message-body">
       {parts.map((part, index) => {
@@ -235,18 +233,18 @@ function MessageContent({ content, hasScript, scriptContent, onRunScript }: Mess
               <div className="code-header">
                 <span className="code-language">{part.language?.toUpperCase() || 'CODE'}</span>
                 <div className="code-actions">
-                  <button 
+                  <button
                     className="code-action-btn"
                     onClick={() => navigator.clipboard.writeText(part.content)}
                   >
-                     Copy
+                    Copy
                   </button>
                   {part.language === 'powershell' && (
-                    <button 
+                    <button
                       className="code-action-btn run-btn"
                       onClick={() => onRunScript(part.content)}
                     >
-                       Run
+                      Run
                     </button>
                   )}
                 </div>
@@ -281,10 +279,10 @@ interface ContentPart {
 function parseMessageContent(content: string): ContentPart[] {
   const parts: ContentPart[] = [];
   const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-  
+
   let lastIndex = 0;
   let match;
-  
+
   while ((match = codeBlockRegex.exec(content)) !== null) {
     // Add text before code block
     if (match.index > lastIndex) {
@@ -293,17 +291,17 @@ function parseMessageContent(content: string): ContentPart[] {
         parts.push({ type: 'text', content: text });
       }
     }
-    
+
     // Add code block
     parts.push({
       type: 'code',
       language: match[1] || 'text',
       content: match[2].trim()
     });
-    
+
     lastIndex = match.index + match[0].length;
   }
-  
+
   // Add remaining text
   if (lastIndex < content.length) {
     const text = content.slice(lastIndex).trim();
@@ -311,14 +309,14 @@ function parseMessageContent(content: string): ContentPart[] {
       parts.push({ type: 'text', content: text });
     }
   }
-  
+
   return parts.length > 0 ? parts : [{ type: 'text', content }];
 }
 
 function formatTextContent(text: string): React.ReactNode {
   // Convert markdown-like formatting to JSX
   const lines = text.split('\n');
-  
+
   return lines.map((line, i) => {
     // Headers
     if (line.startsWith('### ')) {
@@ -330,31 +328,31 @@ function formatTextContent(text: string): React.ReactNode {
     if (line.startsWith('# ')) {
       return <h2 key={i}>{line.slice(2)}</h2>;
     }
-    
+
     // Bold
     const boldFormatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
+
     // List items
     if (line.startsWith('- ') || line.startsWith('* ')) {
       return (
         <li key={i} dangerouslySetInnerHTML={{ __html: boldFormatted.slice(2) }} />
       );
     }
-    
+
     // Numbered items
     if (/^\d+\.\s/.test(line)) {
       return (
         <li key={i} dangerouslySetInnerHTML={{ __html: boldFormatted.replace(/^\d+\.\s/, '') }} />
       );
     }
-    
+
     // Regular paragraph
     if (line.trim()) {
       return (
         <p key={i} dangerouslySetInnerHTML={{ __html: boldFormatted }} />
       );
     }
-    
+
     return <br key={i} />;
   });
 }

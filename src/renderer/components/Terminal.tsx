@@ -6,18 +6,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '../stores/appStore';
 
 export function Terminal() {
-  const { 
-    currentProject, 
-    terminalOutput, 
-    addTerminalOutput, 
-    clearTerminal 
+  const {
+    currentProject,
+    terminalOutput,
+    addTerminalOutput,
+    clearTerminal
   } = useAppStore();
-  
+
   const [command, setCommand] = useState('');
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isExecuting, setIsExecuting] = useState(false);
-  
+
   const outputRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,15 +41,15 @@ export function Terminal() {
     setCommand('');
     setHistory(prev => [...prev, cmd]);
     setHistoryIndex(-1);
-    
+
     // Show command in output
     addTerminalOutput(`PS> ${cmd}`, 'output');
-    
+
     setIsExecuting(true);
-    
+
     try {
       const result = await window.electronAPI.ps.execute(cmd);
-      
+
       if (result.success) {
         if (result.output) {
           addTerminalOutput(result.output, 'output');
@@ -61,7 +61,7 @@ export function Terminal() {
     } catch (err) {
       addTerminalOutput(`ERROR: ${(err as Error).message}`, 'error');
     }
-    
+
     setIsExecuting(false);
     addTerminalOutput('', 'output'); // Empty line
   };
@@ -106,12 +106,12 @@ export function Terminal() {
       {/* Header */}
       <div className="terminal-header">
         <div className="terminal-header-info">
-          <h2>⚡ PowerShell Terminal</h2>
+          <h2>PowerShell Terminal</h2>
           {currentProject && (
             <span className="terminal-path">{currentProject.rootPath}</span>
           )}
         </div>
-        <button 
+        <button
           className="btn btn-secondary btn-small"
           onClick={clearTerminal}
         >
@@ -139,24 +139,24 @@ export function Terminal() {
       <div className="terminal-output" ref={outputRef}>
         {terminalOutput.length === 0 ? (
           <div className="terminal-welcome">
-            <p>⚡ DevFlow AI PowerShell Terminal Ready</p>
+            <p>DevFlow AI PowerShell Terminal Ready</p>
             <p className="hint">Type a command or use the quick actions above.</p>
-            <p className="hint">↑/↓ History • Ctrl+L Clear • Enter Execute</p>
+            <p className="hint">Up/Down: History | Ctrl+L: Clear | Enter: Execute</p>
           </div>
         ) : (
           terminalOutput.map((item) => (
-            <div 
-              key={item.id} 
+            <div
+              key={item.id}
               className={`terminal-line ${item.type}`}
             >
               {item.content}
             </div>
           ))
         )}
-        
+
         {isExecuting && (
           <div className="terminal-line executing">
-            <span className="spinner">⏳</span> Executing...
+            [....] Executing...
           </div>
         )}
       </div>
@@ -174,7 +174,7 @@ export function Terminal() {
           placeholder="Enter PowerShell command..."
           disabled={isExecuting}
         />
-        <button 
+        <button
           className="btn btn-primary"
           onClick={executeCommand}
           disabled={!command.trim() || isExecuting}
@@ -185,9 +185,9 @@ export function Terminal() {
 
       {/* Help Footer */}
       <div className="terminal-footer">
-        <span>↑/↓ History</span>
-        <span>Ctrl+L Clear</span>
-        <span>Enter Execute</span>
+        <span>Up/Down: History</span>
+        <span>Ctrl+L: Clear</span>
+        <span>Enter: Execute</span>
       </div>
     </div>
   );

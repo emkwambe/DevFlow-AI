@@ -16,7 +16,7 @@ export function ProjectContext() {
     return (
       <div className="project-context">
         <div className="empty-state">
-          <div className="empty-icon">🎯</div>
+          <div className="empty-icon">[?]</div>
           <h2>No Project Selected</h2>
           <p>Select or create a project to view its context.</p>
         </div>
@@ -96,7 +96,7 @@ export function ProjectContext() {
     <div className="project-context">
       {/* Header */}
       <div className="context-header">
-        <h2>🎯 Project Context</h2>
+        <h2>Project Context</h2>
         <p className="context-subtitle">
           Information that helps Claude understand your project
         </p>
@@ -105,29 +105,29 @@ export function ProjectContext() {
       {/* Project Info */}
       <div className="context-section">
         <div className="section-header">
-          <h3>📋 Project Info</h3>
+          <h3>Project Info</h3>
         </div>
-        
+
         <div className="info-grid">
           <div className="info-item">
             <label>Name</label>
             <span>{currentProject.name}</span>
           </div>
-          
+
           <div className="info-item">
             <label>Path</label>
             <code>{currentProject.rootPath}</code>
           </div>
-          
+
           <div className="info-item">
             <label>Tech Stack</label>
             <div className="tech-badges">
-              {currentProject.techStack.map((tech, i) => (
+              {(Array.isArray(currentProject.techStack) ? currentProject.techStack : []).map((tech, i) => (
                 <span key={i} className="tech-badge">{tech}</span>
               ))}
             </div>
           </div>
-          
+
           <div className="info-item">
             <label>Created</label>
             <span>{new Date(currentProject.createdAt).toLocaleDateString()}</span>
@@ -138,9 +138,9 @@ export function ProjectContext() {
       {/* Description */}
       <div className="context-section">
         <div className="section-header">
-          <h3>📝 Description</h3>
+          <h3>Description</h3>
           {!isEditingDescription && (
-            <button 
+            <button
               className="btn btn-small btn-secondary"
               onClick={handleEditDescription}
             >
@@ -148,7 +148,7 @@ export function ProjectContext() {
             </button>
           )}
         </div>
-        
+
         {isEditingDescription ? (
           <div className="description-edit">
             <textarea
@@ -158,13 +158,13 @@ export function ProjectContext() {
               placeholder="Describe your project's purpose, target users, and key features..."
             />
             <div className="edit-actions">
-              <button 
+              <button
                 className="btn btn-secondary"
                 onClick={() => setIsEditingDescription(false)}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 className="btn btn-primary"
                 onClick={handleSaveDescription}
               >
@@ -184,10 +184,10 @@ export function ProjectContext() {
       {/* Key Facts */}
       <div className="context-section">
         <div className="section-header">
-          <h3>💡 Key Facts</h3>
+          <h3>Key Facts</h3>
           <span className="count">{currentProject.keyFacts.length}</span>
         </div>
-        
+
         <p className="section-description">
           Important details Claude should remember about your project
         </p>
@@ -197,16 +197,16 @@ export function ProjectContext() {
           {currentProject.keyFacts.map((fact) => (
             <div key={fact.id} className="fact-item">
               <span className="fact-text">{fact.fact}</span>
-              <button 
+              <button
                 className="remove-btn"
                 onClick={() => handleRemoveFact(fact.id)}
                 title="Remove fact"
               >
-                ×
+                x
               </button>
             </div>
           ))}
-          
+
           {currentProject.keyFacts.length === 0 && (
             <div className="empty-list">
               No key facts yet. Add important details below.
@@ -223,7 +223,7 @@ export function ProjectContext() {
             placeholder="Add a key fact..."
             onKeyDown={(e) => e.key === 'Enter' && handleAddFact()}
           />
-          <button 
+          <button
             className="btn btn-primary"
             onClick={handleAddFact}
             disabled={!newFact.trim()}
@@ -236,10 +236,10 @@ export function ProjectContext() {
       {/* Decisions */}
       <div className="context-section">
         <div className="section-header">
-          <h3>⚖️ Decisions Made</h3>
+          <h3>Decisions Made</h3>
           <span className="count">{currentProject.decisions.length}</span>
         </div>
-        
+
         <p className="section-description">
           Technical and architectural decisions for this project
         </p>
@@ -254,16 +254,16 @@ export function ProjectContext() {
                   <span className="decision-reasoning">{decision.reasoning}</span>
                 )}
               </div>
-              <button 
+              <button
                 className="remove-btn"
                 onClick={() => handleRemoveDecision(decision.id)}
                 title="Remove decision"
               >
-                ×
+                x
               </button>
             </div>
           ))}
-          
+
           {currentProject.decisions.length === 0 && (
             <div className="empty-list">
               No decisions recorded yet.
@@ -285,7 +285,7 @@ export function ProjectContext() {
             onChange={(e) => setNewDecision({ ...newDecision, reasoning: e.target.value })}
             placeholder="Reasoning (optional)"
           />
-          <button 
+          <button
             className="btn btn-primary"
             onClick={handleAddDecision}
             disabled={!newDecision.decision.trim()}
