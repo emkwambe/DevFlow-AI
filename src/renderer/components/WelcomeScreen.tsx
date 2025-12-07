@@ -324,10 +324,49 @@ export function WelcomeScreen() {
 
 export function GuidedActions({ onAction }: { onAction: (prompt: string) => void }) {
   const { currentProject } = useAppStore();
-  
+
   if (!currentProject) return null;
-  
+
+  // Get key facts and decisions for context
+  const factsContext = currentProject.keyFacts?.length
+    ? `\n\nKey Facts:\n${currentProject.keyFacts.map(f => `- ${f.fact}`).join('\n')}`
+    : '';
+  const decisionsContext = currentProject.decisions?.length
+    ? `\n\nDecisions Made:\n${currentProject.decisions.map(d => `- ${d.decision}: ${d.reasoning}`).join('\n')}`
+    : '';
+
   const actions = [
+    {
+      id: 'discuss',
+      label: 'Discussion',
+      icon: '[Plan]',
+      description: 'Sprint planning discussion',
+      prompt: `Let's have a sprint planning discussion for ${currentProject.name}.
+
+Project Vision:
+${currentProject.description}
+${factsContext}
+${decisionsContext}
+
+As my technical partner, please:
+
+1. **Review Current State** - What have we built so far? What's working?
+
+2. **Feature Backlog** - Based on the project vision, create a prioritized list of features we should build. For each feature:
+   - Name and brief description
+   - User value it provides
+   - Technical complexity (Low/Medium/High)
+   - Dependencies on other features
+
+3. **Recommended Sprint** - Suggest which 2-3 features we should tackle next and WHY. Consider:
+   - User impact vs effort
+   - Technical dependencies
+   - Risk mitigation
+
+4. **Questions for Me** - What decisions do you need from me to proceed?
+
+Be opinionated. Don't just list options - recommend a specific path forward with your reasoning.`
+    },
     {
       id: 'step1',
       label: 'Step 1: Folders',
@@ -368,8 +407,8 @@ ${currentProject.description}`
     },
     {
       id: 'step3',
-      label: 'Step 3: Feature',
-      icon: '[Go]',
+      label: 'First Feature',
+      icon: '[1st]',
       description: 'Build first feature',
       prompt: `Let's build the first feature for ${currentProject.name}.
 
@@ -377,6 +416,59 @@ Based on the project vision:
 ${currentProject.description}
 
 What would be the most valuable first feature to implement? Suggest 2-3 options and let me choose, then we'll build it together.`
+    },
+    {
+      id: 'next',
+      label: 'Next Feature',
+      icon: '[Next]',
+      description: 'AI selects and builds next feature',
+      prompt: `Time to build the next feature for ${currentProject.name}.
+
+Project Context:
+${currentProject.description}
+${factsContext}
+${decisionsContext}
+
+**Your Task:**
+
+1. **Evaluate** - Review what we've built and what the project needs
+2. **Select** - Choose the most sensible next feature to build. DO NOT ask me to choose - you decide based on:
+   - Logical progression (what makes sense after what we have)
+   - User value delivery
+   - Technical dependencies
+   - Risk/complexity balance
+
+3. **Justify** - Explain WHY you selected this feature over alternatives
+
+4. **Plan** - Break down the implementation into steps:
+   - What files need to be created/modified
+   - What components/functions are needed
+   - What the user flow looks like
+
+5. **Execute** - Provide the PowerShell script to create the first part
+
+Be decisive. I trust your technical judgment. Don't be a rubber stamp - if something in our approach needs adjustment, say so.`
+    },
+    {
+      id: 'review',
+      label: 'Review',
+      icon: '[QA]',
+      description: 'Code review and improvements',
+      prompt: `Please review the current state of ${currentProject.name}.
+
+Project path: ${currentProject.rootPath}
+${factsContext}
+${decisionsContext}
+
+Analyze and report on:
+
+1. **Code Quality** - Any issues, anti-patterns, or improvements needed?
+2. **Architecture** - Is the structure sound? Any refactoring needed?
+3. **Security** - Any vulnerabilities or concerns?
+4. **Performance** - Any obvious bottlenecks?
+5. **Missing Pieces** - What critical functionality is missing?
+
+Be critical but constructive. Prioritize issues by severity.`
     },
     {
       id: 'auth',
@@ -398,7 +490,7 @@ Use the Write-FileNoBom helper for all file creation.`
     },
     {
       id: 'database',
-      label: 'Add Database',
+      label: 'Database',
       icon: '[DB]',
       description: 'Supabase schema',
       prompt: `Design and create the database schema for ${currentProject.name}.
