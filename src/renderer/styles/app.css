@@ -436,10 +436,28 @@ body {
   flex: 1;
   padding: 1rem;
   overflow-y: auto;
+  min-height: 0;
   font-family: 'Consolas', 'Monaco', monospace;
   font-size: 0.85rem;
   line-height: 1.5;
   background: #0d1117;
+}
+
+.terminal-output::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+
+.terminal-output::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
 }
 
 .terminal-welcome { color: var(--text-muted); }
