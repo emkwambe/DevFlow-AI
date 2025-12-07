@@ -8,7 +8,7 @@ import { useAppStore } from '../stores/appStore';
 type OnboardingStep = 'welcome' | 'vision' | 'path' | 'done';
 
 export function WelcomeScreen() {
-  const { createProject, setProjectPath } = useAppStore();
+  const { createProject } = useAppStore();
   const [step, setStep] = useState<OnboardingStep>('welcome');
   
   // Vision form state
@@ -21,7 +21,7 @@ export function WelcomeScreen() {
   const [selectedPath, setSelectedPath] = useState('');
 
   const handleSelectFolder = async () => {
-    const path = await window.electronAPI.fs.selectFolder();
+    const path = await window.electronAPI.dialog.selectFolder();
     if (path) {
       setSelectedPath(path);
     }
@@ -29,24 +29,21 @@ export function WelcomeScreen() {
 
   const handleCreateProject = async () => {
     if (!projectName.trim()) return;
-    
+
     // Build rich description from vision answers
     const description = [
       targetUsers && `**Target Users:** ${targetUsers}`,
       problemSolved && `**Problem Solved:** ${problemSolved}`,
       wishedFeatures && `**Key Features:** ${wishedFeatures}`
     ].filter(Boolean).join('\n\n');
-    
-    const project = await createProject(
-      projectName.trim(),
-      description || 'New project',
-      selectedPath
-    );
-    
-    if (selectedPath && project) {
-      await setProjectPath(selectedPath);
-    }
-    
+
+    await createProject({
+      name: projectName.trim(),
+      description: description || 'New project',
+      rootPath: selectedPath,
+      techStack: [] // Will be populated later during scaffolding
+    });
+
     setStep('done');
   };
 

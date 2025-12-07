@@ -6,14 +6,14 @@ import React, { useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 
 export function ProjectSelector() {
-  const { 
-    projects, 
-    currentProject, 
+  const {
+    projects,
+    currentProject,
     setCurrentProject,
     createProject,
     loadProjects
   } = useAppStore();
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [showDiscovery, setShowDiscovery] = useState(false);
   const [discoveredProject, setDiscoveredProject] = useState<DiscoveredProject | null>(null);
@@ -31,11 +31,11 @@ export function ProjectSelector() {
   const handleBrowseFolder = async () => {
     try {
       const folderPath = await window.electronAPI.dialog.selectFolder();
-      
+
       if (folderPath) {
         setIsScanning(true);
         setIsOpen(false);
-        
+
         // Scan the folder for project files
         const discovered = await scanProjectFolder(folderPath);
         setDiscoveredProject(discovered);
@@ -52,7 +52,7 @@ export function ProjectSelector() {
   const scanProjectFolder = async (folderPath: string): Promise<DiscoveredProject> => {
     const detectedFiles: string[] = [];
     const techStack: string[] = [];
-    
+
     // Get folder name as project name
     const pathParts = folderPath.split(/[/\\]/);
     const name = pathParts[pathParts.length - 1] || 'my-project';
@@ -84,7 +84,7 @@ export function ProjectSelector() {
       try {
         const fullPath = `${folderPath}/${check.file}`;
         const exists = await window.electronAPI.fs.exists(fullPath);
-        
+
         if (exists) {
           detectedFiles.push(check.file);
           if (check.tech && !techStack.includes(check.tech)) {
@@ -101,7 +101,7 @@ export function ProjectSelector() {
     try {
       const packageJsonPath = `${folderPath}/package.json`;
       const exists = await window.electronAPI.fs.exists(packageJsonPath);
-      
+
       if (exists) {
         // We can't read file content yet, but we know it exists
         // Future: Read and parse package.json for dependencies
@@ -147,7 +147,7 @@ export function ProjectSelector() {
   };
 
   // Sort projects by most recent
-  const sortedProjects = [...projects].sort((a, b) => 
+  const sortedProjects = [...projects].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
@@ -155,7 +155,7 @@ export function ProjectSelector() {
     <>
       {/* Project Selector Dropdown */}
       <div className="project-selector">
-        <button 
+        <button
           className="project-selector-btn"
           onClick={() => setIsOpen(!isOpen)}
         >
@@ -164,23 +164,23 @@ export function ProjectSelector() {
               {currentProject ? currentProject.name : 'Select Project'}
             </span>
             <span className="project-selector-subtitle">
-              {currentProject 
+              {currentProject
                 ? (Array.isArray(currentProject?.techStack) ? currentProject.techStack : []).slice(0, 2).join(', ')
                 : 'No project'
               }
             </span>
           </div>
-          <span className="project-selector-arrow">{isOpen ? 'ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²' : 'ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¼'}</span>
+          <span className="project-selector-arrow">{isOpen ? '^' : 'v'}</span>
         </button>
 
         {isOpen && (
           <div className="project-dropdown">
             {/* Open Folder Option */}
-            <button 
+            <button
               className="dropdown-item browse-folder"
               onClick={handleBrowseFolder}
             >
-              <span className="dropdown-icon">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡</span>
+              <span className="dropdown-icon">[+]</span>
               <div className="dropdown-item-content">
                 <span className="dropdown-item-label">Open Existing Project</span>
                 <span className="dropdown-item-hint">Browse to your project folder</span>
@@ -201,7 +201,7 @@ export function ProjectSelector() {
                 className={`dropdown-item ${currentProject?.id === project.id ? 'active' : ''}`}
                 onClick={() => handleSelectProject(project)}
               >
-                <span className="dropdown-icon">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â</span>
+                <span className="dropdown-icon">[*]</span>
                 <div className="dropdown-item-content">
                   <span className="dropdown-item-label">{project.name}</span>
                   <span className="dropdown-item-hint">
@@ -209,21 +209,21 @@ export function ProjectSelector() {
                   </span>
                 </div>
                 {currentProject?.id === project.id && (
-                  <span className="dropdown-check">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“</span>
+                  <span className="dropdown-check">[ok]</span>
                 )}
               </button>
             ))}
 
             {/* Create New Option */}
             <div className="dropdown-divider"></div>
-            <button 
+            <button
               className="dropdown-item create-new"
               onClick={() => {
                 setCurrentProject(null);
                 setIsOpen(false);
               }}
             >
-              <span className="dropdown-icon">ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¨</span>
+              <span className="dropdown-icon">[new]</span>
               <div className="dropdown-item-content">
                 <span className="dropdown-item-label">Create New Project</span>
                 <span className="dropdown-item-hint">Start fresh with guided setup</span>
@@ -249,15 +249,15 @@ export function ProjectSelector() {
         <div className="modal-overlay">
           <div className="modal discovery-modal">
             <div className="modal-header">
-              <h2>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ Project Discovered!</h2>
-              <button 
+              <h2>Project Discovered!</h2>
+              <button
                 className="modal-close"
                 onClick={() => {
                   setShowDiscovery(false);
                   setDiscoveredProject(null);
                 }}
               >
-                ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â
+                X
               </button>
             </div>
 
@@ -271,7 +271,7 @@ export function ProjectSelector() {
               {/* Detected Files */}
               {discoveredProject.detectedFiles.length > 0 && (
                 <div className="discovery-section">
-                  <label>ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Found</label>
+                  <label>Files Found</label>
                   <div className="discovery-files">
                     {discoveredProject.detectedFiles.map((file, i) => (
                       <span key={i} className="discovery-file">{file}</span>
@@ -284,7 +284,7 @@ export function ProjectSelector() {
               <div className="discovery-section">
                 <label>Detected Tech Stack</label>
                 <div className="discovery-tech-stack">
-                  {discovered(Array.isArray(project?.techStack) ? project.techStack : []).map((tech, i) => (
+                  {(Array.isArray(discoveredProject?.techStack) ? discoveredProject.techStack : []).map((tech, i) => (
                     <span key={i} className="tech-badge">{tech}</span>
                   ))}
                 </div>
@@ -321,7 +321,7 @@ export function ProjectSelector() {
             </div>
 
             <div className="modal-footer">
-              <button 
+              <button
                 className="btn btn-secondary"
                 onClick={() => {
                   setShowDiscovery(false);
@@ -330,7 +330,7 @@ export function ProjectSelector() {
               >
                 Cancel
               </button>
-              <button 
+              <button
                 className="btn btn-primary"
                 onClick={handleImportProject}
               >
